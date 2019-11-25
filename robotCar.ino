@@ -1,21 +1,24 @@
-RedBotSensor cSen = RedBotSensor();
-RedBotSensor lSen = RedBotSensor();
-RedBotSensor rSen = RedBotSensor();
+RedBotSensor cSen = RedBotSensor(A1);
+RedBotSensor lSen = RedBotSensor(A0);
+RedBotSensor rSen = RedBotSensor(A2);
 
 RedBotSoftwareSerial swsp;
 
 const int bgLevel = 600;
 const int lineLevel = 700;
+const int stopLevel = 0;
+const int exitLevel = 0;
+
+int whichExit = 0;
 
 void setup() {
   swsp.begin(9600);
-  // put your setup code here, to run once:
 
 }
 
 void loop() {
-  // Case 1: both white. Drive forward!
-  if(lSen.read() < bgLevel && rSen.read() < bgLevel && cSen.read() > lineLevle) 
+  //Case 1: both white
+  if(lSen.read() < bgLevel && rSen.read() < bgLevel && cSen.read() > lineLevel) 
     motors.drive(100);
     
   //Case 2: center sensor is empty
@@ -33,6 +36,8 @@ void loop() {
   {
     takeHighway();
   }
+
+  if(cSen.read
   // put your main code here, to run repeatedly:
   //implement basic line following code
   //if multiple IR sensors are toggled, run takeHighway
@@ -50,8 +55,9 @@ void takeHighway() {
   while(true) {
     //when three lines are found, run this function to speed up
     //when the two outside sensors lose their input, return to loop
-    if(cSen.read() > lineLevel && rSen.read() < bgLevel && lSen.read() < bgLevel)
+    if(cSen.read() > lineLevel && rSen.read() < bgLevel && lSen.read() < bgLevel) {
       loop();
+    }
   }
 }
 
@@ -59,7 +65,8 @@ void takeTunnel() {
   while(true) {
     //when the black line is missing, check and follow the walls using sonar
     //when the black line returns, return to loop
-    if(cSen.read() > lineLevel && rSen.read() < bgLevel && lSen.read() < bgLevel)
+    if(cSen.read() > lineLevel && rSen.read() < bgLevel && lSen.read() < bgLevel) {
       loop();
+    }
   }
 }
