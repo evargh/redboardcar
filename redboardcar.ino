@@ -1,14 +1,14 @@
 #include <RedBot.h>
 
 //motor1
-const int AIN1 = 13;
-const int AIN2 = 12;
+const int AIN1 = 11;
+const int AIN2 = 10;
 
 //motor2
-const int BIN1 = A3;
-const int BIN2 = A4;
+const int BIN1 = 6;
+const int BIN2 = 5;
 
-const int PWMA = 11;
+const int PWM = 11;
 
 int switchPin = 7;
 
@@ -33,7 +33,9 @@ void setup() {
 
   pinMode(AIN1, OUTPUT);
   pinMode(AIN2, OUTPUT);
-  pinMode(PWMA, OUTPUT);
+  pinMode(BIN1, OUTPUT);
+  pinMode(BIN2, OUTPUT);
+  pinMode(PWM, OUTPUT);
   
   swsp.begin(9600);
 
@@ -41,18 +43,22 @@ void setup() {
 
 void loop() {
   //Case 1: both white
-  if(lSen.read() < bgLevel && rSen.read() < bgLevel && cSen.read() > lineLevel) 
+  if(lSen.read() < bgLevel && rSen.read() < bgLevel && cSen.read() > lineLevel) {
     spinMotor(0);
-    
-  //Case 2: center sensor is empty
-  if(cSen.read() < bgLevel) {
-    int angleCounter = 0;
-    while(cSen.read() < bgLevel) //this and some condition to make sure is
+  }
+
+  //left center
+  if(cSen.read() > lineLevel && lSen.read() > lineLevel && rSen.read() < bgLevel) {
+    while(lSen.read() > lineLevel) {//this and some condition to make sure is
       spinMotor(-1);           //limited within 90 degrees
-    while(cSen.read() < bgLevel) //this and some condition to make sure is
-      spinMotor(-2);           //limited within 180 degrees
-    if(cSen.read() < bgLevel)
-      takeTunnel();
+    }
+  }
+
+  //right center
+  if(cSen.read() > lineLevel && rSen.read() > lineLevel && lSen.read() < bgLevel) {
+    while(rSen.read() > lineLevel) { //this and some condition to make sure is
+      spinMotor(-2);           //limited within 90 degrees
+    }
   }
   
   //Case 3: all sensors see dark
@@ -99,11 +105,14 @@ void takeTunnel() {
     if(cSen.read() > lineLevel && rSen.read() < bgLevel && lSen.read() < bgLevel) {
       loop();
     }
+    //if(nearing left wall)
+    //  motorWrite(-2)
+    //if(nearing right wall)
+    // motorWrite(-1)
   }
 }
 
-void spinMotor(int motorSpeed)
-{
+void spinMotor(int motorSpeed) {
   if(motorSpeed >= 0)
   {
     digitalWrite(AIN1, HIGH);
@@ -116,12 +125,12 @@ void spinMotor(int motorSpeed)
     digitalWrite(AIN1, HIGH);
     digitalWrite(AIN2, LOW);
     digitalWrite(BIN1, LOW);
-    digitalWrite(BIN2, HIGH);
+    digitalWrite(BIN2, LOW);
   }
   if(motorSpeed == -2)
   {
     digitalWrite(AIN1, LOW);
-    digitalWrite(AIN2, HIGH);
+    digitalWrite(AIN2, LOW);
     digitalWrite(BIN1, HIGH);
     digitalWrite(BIN2, LOW);
   }
@@ -133,7 +142,7 @@ void spinMotor(int motorSpeed)
     digitalWrite(BIN2, LOW);
   }
   if(motorSpeed == 2)
-    analogWrite(PWMA, 80);
+    analogWrite(PWM, 150);
   else
-    analogWrite(PWMA, 64);
+    analogWrite(PWM, 100);
 }
