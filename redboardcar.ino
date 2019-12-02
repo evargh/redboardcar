@@ -1,7 +1,13 @@
 #include <RedBot.h>
 
+//motor1
 const int AIN1 = 13;
 const int AIN2 = 12;
+
+//motor2
+const int BIN1 = A3;
+const int BIN2 = A4;
+
 const int PWMA = 11;
 
 int switchPin = 7;
@@ -40,9 +46,10 @@ void loop() {
     
   //Case 2: center sensor is empty
   if(cSen.read() < bgLevel) {
-    while(cSen.read() < bgLevel) //this and some condition to make sure im
+    int angleCounter = 0;
+    while(cSen.read() < bgLevel) //this and some condition to make sure is
       spinMotor(-1);           //limited within 90 degrees
-    while(cSen.read() < bgLevel) //this and some condition to make sure im
+    while(cSen.read() < bgLevel) //this and some condition to make sure is
       spinMotor(-2);           //limited within 180 degrees
     if(cSen.read() < bgLevel)
       takeTunnel();
@@ -53,6 +60,13 @@ void loop() {
   {
     takeHighway();
   }
+
+  //Case 4: all sensors see red
+  if (lSen.read() > stopFloor && rSen.read() > stopFloor && cSen.read() > stopFloor && lSen.read() < stopCeiling && rSen.read() < stopCeiling && cSen.read() < stopCeiling)
+  {
+    spinMotor(-3);
+  }
+  
   // put your main code here, to run repeatedly:
   //implement basic line following code
   //if multiple IR sensors are toggled, run takeHighway
@@ -64,6 +78,7 @@ void loop() {
 void takeExit() {
   //after counting a certain amount of exits, run this function to turn off of the line
   //return to loop after the function is done
+  
 }
 
 void takeHighway() {
@@ -92,25 +107,33 @@ void spinMotor(int motorSpeed)
   if(motorSpeed >= 0)
   {
     digitalWrite(AIN1, HIGH);
-    digitalWrite(AIN2, HIGH);
+    digitalWrite(AIN2, LOW);
+    digitalWrite(BIN1, HIGH);
+    digitalWrite(BIN2, LOW);
   }
   if(motorSpeed == -1)
   {
     digitalWrite(AIN1, HIGH);
     digitalWrite(AIN2, LOW);
+    digitalWrite(BIN1, LOW);
+    digitalWrite(BIN2, HIGH);
   }
   if(motorSpeed == -2)
   {
     digitalWrite(AIN1, LOW);
     digitalWrite(AIN2, HIGH);
+    digitalWrite(BIN1, HIGH);
+    digitalWrite(BIN2, LOW);
   }
   if(motorSpeed == -3)
   {
     digitalWrite(AIN1, LOW);
     digitalWrite(AIN2, LOW);
+    digitalWrite(BIN1, LOW);
+    digitalWrite(BIN2, LOW);
   }
-  if(motorSpeed == 1)
-    analogWrite(PWMA, 64);
-  else
+  if(motorSpeed == 2)
     analogWrite(PWMA, 80);
+  else
+    analogWrite(PWMA, 64);
 }
