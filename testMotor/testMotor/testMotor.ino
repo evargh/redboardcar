@@ -1,3 +1,11 @@
+//const int AIN1 = 10;
+//const int AIN2 = 11;
+
+//const int BIN1 = 6;
+//const int BIN2 = 5;
+
+//const int PWMA = 13;
+
 const int AIN1 = 10;
 const int AIN2 = 11;
 const int PWMA = 13;
@@ -17,7 +25,6 @@ void setup() {
 void loop() {
   if(Serial.available() > 0){
     motorSpeed = Serial.parseInt();
-git 
     Serial.print("Motor Speed: ");
     Serial.println(motorSpeed);
   }
