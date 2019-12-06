@@ -8,9 +8,7 @@ const int AIN2 = 10;
 const int BIN1 = 6;
 const int BIN2 = 5;
 
-const int PWM = 11;
-
-int switchPin = 7;
+const int PWM = 13;
 
 int motorSpeed = 0;
 
@@ -47,17 +45,17 @@ void loop() {
     spinMotor(0);
   }
 
-  //left center
+  //left + center
   if(cSen.read() > lineLevel && lSen.read() > lineLevel && rSen.read() < bgLevel) {
-    while(lSen.read() > lineLevel) {//this and some condition to make sure is
-      spinMotor(-1);           //limited within 90 degrees
+    while(lSen.read() > lineLevel) {
+      spinMotor(-1);
     }
   }
 
-  //right center
+  //right + center
   if(cSen.read() > lineLevel && rSen.read() > lineLevel && lSen.read() < bgLevel) {
-    while(rSen.read() > lineLevel) { //this and some condition to make sure is
-      spinMotor(-2);           //limited within 90 degrees
+    while(rSen.read() > lineLevel) {
+      spinMotor(-2);
     }
   }
   
@@ -113,6 +111,10 @@ void takeTunnel() {
 }
 
 void spinMotor(int motorSpeed) {
+  if(motorSpeed == 1)
+    analogWrite(PWM, 150);
+  else
+    analogWrite(PWM, 100);
   if(motorSpeed >= 0)
   {
     digitalWrite(AIN1, HIGH);
@@ -141,8 +143,4 @@ void spinMotor(int motorSpeed) {
     digitalWrite(BIN1, LOW);
     digitalWrite(BIN2, LOW);
   }
-  if(motorSpeed == 2)
-    analogWrite(PWM, 150);
-  else
-    analogWrite(PWM, 100);
 }
