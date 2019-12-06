@@ -1,4 +1,4 @@
-
+// test
 #include <RedBot.h>
 RedBotSensor cSen = RedBotSensor();
 RedBotSensor lSen = RedBotSensor();
@@ -8,6 +8,7 @@ RedBotSoftwareSerial swsp;
 
 const int bgLevel = 600;
 const int lineLevel = 700;
+int thresh = 800;
 
 void setup() {
   swsp.begin(9600);

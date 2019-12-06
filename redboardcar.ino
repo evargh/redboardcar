@@ -33,7 +33,7 @@ void setup() {
   pinMode(BIN1, OUTPUT);
   pinMode(BIN2, OUTPUT);
   pinMode(PWM, OUTPUT);
-  
+
   Serial.begin(9600);
 
     Serial.print("Left Sensor: ");
@@ -46,7 +46,7 @@ void setup() {
 }
 
 void loop() {
-  
+
   Serial.print("Left Sensor: ");
   Serial.println(lSen.read());
   Serial.print("Center Sensor: ");
@@ -54,11 +54,18 @@ void loop() {
   Serial.print("Right Sensor: ");
   Serial.println(rSen.read());
   delay(1000);
-  
+
   //Case 1: both white
+  Serial.print(lSen.read());
+  Serial.print("\t");
+  Serial.print(cSen.read());
+  Serial.print("\t");
+  Serial.print(rSen.read());
+  Serial.println();
+
   if(lSen.read() < bgLevel && rSen.read() < bgLevel && cSen.read() > lineLevel) {
-    spinMotor(0);  
-  
+    spinMotor(0);
+
   Serial.print("Left Sensor: ");
   Serial.println(lSen.read());
   Serial.print("Center Sensor: ");
@@ -66,7 +73,7 @@ void loop() {
   Serial.print("Right Sensor: ");
   Serial.println(rSen.read());
   delay(1000);
-    
+
   }
 
   //left + center
@@ -88,7 +95,7 @@ void loop() {
   if(cSen.read() > lineLevel && rSen.read() > lineLevel && lSen.read() < bgLevel) {
     while(rSen.read() > lineLevel) {
       spinMotor(-2);
-      
+
   Serial.print("Left Sensor: ");
   Serial.println(lSen.read());
   Serial.print("Center Sensor: ");
@@ -98,12 +105,12 @@ void loop() {
   delay(1000);
     }
   }
-  
+
   //Case 3: all sensors see dark
   /*if (lSen.read() > lineLevel && rSen.read() > lineLevel && cSen.read() > lineLevel)
   {
     takeHighway();
-    
+
   Serial.print("Left Sensor: ");
   Serial.println(lSen.read());
   Serial.print("Center Sensor: ");
@@ -126,7 +133,7 @@ void loop() {
   Serial.println(rSen.read());
   delay(1000);
   }*/
-  
+
   // put your main code here, to run repeatedly:
   //implement basic line following code
   //if multiple IR sensors are toggled, run takeHighway
@@ -138,7 +145,7 @@ void loop() {
 /*void takeExit() {
   //after counting a certain amount of exits, run this function to turn off of the line
   //return to loop after the function is done
-  
+
 }
 
 void takeHighway() {
@@ -160,7 +167,7 @@ void takeTunnel() {
     //when the black line returns, return to loop
     if(cSen.read() > lineLevel && rSen.read() < bgLevel && lSen.read() < bgLevel) {
       loop();
-      
+
       Serial.println("Taking Tunnel");
     }
     //if(nearing left wall)
