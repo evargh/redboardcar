@@ -27,8 +27,7 @@ const int exitLevel = 0;
 int whichExit = 0;
 
 void setup() {
-  pinMode(switchPin, INPUT_PULLUP);
-
+  
   pinMode(AIN1, OUTPUT);
   pinMode(AIN2, OUTPUT);
   pinMode(BIN1, OUTPUT);
@@ -41,6 +40,13 @@ void setup() {
 
 void loop() {
   //Case 1: both white
+  Serial.print(lSen.read());
+  Serial.print("\t");  
+  Serial.print(cSen.read());
+  Serial.print("\t"); 
+  Serial.print(rSen.read());
+  Serial.println();
+  
   if(lSen.read() < bgLevel && rSen.read() < bgLevel && cSen.read() > lineLevel) {
     spinMotor(0);
   }
