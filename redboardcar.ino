@@ -12,11 +12,9 @@ const int PWM = 13;
 
 int motorSpeed = 0;
 
-RedBotSensor lSen = RedBotSensor(A0);
+RedBotSensor lSen = RedBotSensor(A2);
 RedBotSensor cSen = RedBotSensor(A1);
-RedBotSensor rSen = RedBotSensor(A2);
-
-RedBotSoftwareSerial swsp;
+RedBotSensor rSen = RedBotSensor(A0);
 
 const int bgLevel = 400;
 const int lineLevel = 800;
@@ -35,14 +33,6 @@ void setup() {
   pinMode(PWM, OUTPUT);
 
   Serial.begin(9600);
-
-    Serial.print("Left Sensor: ");
-  Serial.println(lSen.read());
-  Serial.print("Center Sensor: ");
-  Serial.println(cSen.read());
-  Serial.print("Right Sensor: ");
-  Serial.println(rSen.read());
-  delay(1000);
 }
 
 void loop() {
@@ -56,55 +46,33 @@ void loop() {
   delay(1000);
 
   //Case 1: both white
-  Serial.print(lSen.read());
-  Serial.print("\t");
-  Serial.print(cSen.read());
-  Serial.print("\t");
-  Serial.print(rSen.read());
-  Serial.println();
-
   if(lSen.read() < bgLevel && rSen.read() < bgLevel && cSen.read() > lineLevel) {
     spinMotor(0);
-
-  Serial.print("Left Sensor: ");
-  Serial.println(lSen.read());
-  Serial.print("Center Sensor: ");
-  Serial.println(cSen.read());
-  Serial.print("Right Sensor: ");
-  Serial.println(rSen.read());
-  delay(1000);
-
+    Serial.println("go straight");
   }
 
   //left + center
-  if(cSen.read() > lineLevel && lSen.read() > lineLevel && rSen.read() < bgLevel) {
+  else if(cSen.read() > lineLevel && lSen.read() > lineLevel && rSen.read() < bgLevel) {
+    Serial.println("go left");
     while(lSen.read() > lineLevel) {
       spinMotor(-1);
-
-  Serial.print("Left Sensor: ");
-  Serial.println(lSen.read());
-  Serial.print("Center Sensor: ");
-  Serial.println(cSen.read());
-  Serial.print("Right Sensor: ");
-  Serial.println(rSen.read());
-  delay(1000);
     }
   }
 
   //right + center
-  if(cSen.read() > lineLevel && rSen.read() > lineLevel && lSen.read() < bgLevel) {
+  else if(cSen.read() > lineLevel && rSen.read() > lineLevel && lSen.read() < bgLevel) {
+    Serial.println("go right");
     while(rSen.read() > lineLevel) {
       spinMotor(-2);
-
-  Serial.print("Left Sensor: ");
-  Serial.println(lSen.read());
-  Serial.print("Center Sensor: ");
-  Serial.println(cSen.read());
-  Serial.print("Right Sensor: ");
-  Serial.println(rSen.read());
-  delay(1000);
     }
   }
+
+  else {
+    Serial.println("option not found");
+  }
+}
+
+  
 
   //Case 3: all sensors see dark
   /*if (lSen.read() > lineLevel && rSen.read() > lineLevel && cSen.read() > lineLevel)
@@ -140,7 +108,7 @@ void loop() {
   //if an exit is passed, increment the exit counter or run takeExit
   //if the black line is gone, run takeTunnel
   //if you hit red, STOP
-}
+//}
 
 /*void takeExit() {
   //after counting a certain amount of exits, run this function to turn off of the line
