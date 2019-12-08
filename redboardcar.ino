@@ -1,5 +1,15 @@
 #include <RedBot.h>
 #include <RedBotSoftwareSerial.h>
+#include <SharpIR.h>
+
+SharpIR LSensor = SharpIR(A3, 1080);
+SharpIR RSensor = SharpIR(A4, 1080);
+SharpIR CSensor = SharpIR(A5, 1080);
+
+int ldist = 0;
+int rdist = 0;
+int cdist = 0;
+
 //motor1
 const int AIN1 = 11;
 const int AIN2 = 10;
@@ -52,7 +62,7 @@ void loop() {
   }
 
   //left + center
-  else if(cSen.read() > lineLevel && lSen.read() > lineLevel && rSen.read() < bgLevel) {
+  if(cSen.read() > lineLevel && lSen.read() > lineLevel && rSen.read() < bgLevel) {
     Serial.println("go left");
     while(lSen.read() > lineLevel) {
       spinMotor(-1);
@@ -60,90 +70,54 @@ void loop() {
   }
 
   //right + center
-  else if(cSen.read() > lineLevel && rSen.read() > lineLevel && lSen.read() < bgLevel) {
+  if(cSen.read() > lineLevel && rSen.read() > lineLevel && lSen.read() < bgLevel) {
     Serial.println("go right");
     while(rSen.read() > lineLevel) {
       spinMotor(-2);
     }
   }
 
-  else {
-    Serial.println("option not found");
+  //Case 3: all sensors see dark
+  if (lSen.read() > lineLevel && rSen.read() > lineLevel && cSen.read() > lineLevel)
+  {
+    Serial.println("taking highway");
+    spinMotor(1);
+  }
+
+  //Case 4: all sensors see nothing
+  if (lSen.read() < bgLevel && rSen.read() < bgLevel && cSen.read() < bgLevel)
+  {
+    Serial.println("taking tunnel");
+    takeTunnel();
+  }
+
+  //Case 5: all sensors see red
+  if (lSen.read() > stopFloor && rSen.read() > stopFloor && cSen.read() > stopFloor && lSen.read() < stopCeiling && rSen.read() < stopCeiling && cSen.read() < stopCeiling)
+  {
+    spinMotor(-3);
   }
 }
 
-  
-
-  //Case 3: all sensors see dark
-  /*if (lSen.read() > lineLevel && rSen.read() > lineLevel && cSen.read() > lineLevel)
-  {
-    takeHighway();
-
-  Serial.print("Left Sensor: ");
-  Serial.println(lSen.read());
-  Serial.print("Center Sensor: ");
-  Serial.println(cSen.read());
-  Serial.print("Right Sensor: ");
-  Serial.println(rSen.read());
-  delay(1000);
-  }*/
-
-  //Case 4: all sensors see red
-  /*if (lSen.read() > stopFloor && rSen.read() > stopFloor && cSen.read() > stopFloor && lSen.read() < stopCeiling && rSen.read() < stopCeiling && cSen.read() < stopCeiling)
-  {
-    spinMotor(-3);
-
-  Serial.print("Left Sensor: ");
-  Serial.println(lSen.read());
-  Serial.print("Center Sensor: ");
-  Serial.println(cSen.read());
-  Serial.print("Right Sensor: ");
-  Serial.println(rSen.read());
-  delay(1000);
-  }*/
-
-  // put your main code here, to run repeatedly:
-  //implement basic line following code
-  //if multiple IR sensors are toggled, run takeHighway
-  //if an exit is passed, increment the exit counter or run takeExit
-  //if the black line is gone, run takeTunnel
-  //if you hit red, STOP
-//}
-
-/*void takeExit() {
+void takeExit() {
   //after counting a certain amount of exits, run this function to turn off of the line
   //return to loop after the function is done
 
 }
 
-void takeHighway() {
-  while(true) {
-    spinMotor(1);
-    //when three lines are found, run this function to speed up
-    //when the two outside sensors lose their input, return to loop
-    if(cSen.read() > lineLevel && rSen.read() < bgLevel && lSen.read() < bgLevel) {
-      loop();
-
-      Serial.println("Taking Highway");
+void takeTunnel() {
+  int lbound = 100;
+  int rbound = 100;
+  while(lSen.read() < bgLevel && rSen.read() < bgLevel && cSen.read() < bgLevel) {
+    ldist = LSensor.distance();
+    rdist = RSensor.distance();
+    if(ldist < lbound) {
+      spinMotor(-2);
+    }
+    if(rdist < rbound) {
+      spinMotor(-1);
     }
   }
 }
-
-void takeTunnel() {
-  while(true) {
-    //when the black line is missing, check and follow the walls using sonar
-    //when the black line returns, return to loop
-    if(cSen.read() > lineLevel && rSen.read() < bgLevel && lSen.read() < bgLevel) {
-      loop();
-
-      Serial.println("Taking Tunnel");
-    }
-    //if(nearing left wall)
-    //  motorWrite(-2)
-    //if(nearing right wall)
-    // motorWrite(-1)
-  }
-}*/
 
 void spinMotor(int motorSpeed) {
   Serial.println(motorSpeed);
@@ -153,7 +127,6 @@ void spinMotor(int motorSpeed) {
     analogWrite(PWM, 127);
   if(motorSpeed >= 0)
   {
-    Serial.println("Straight up");
     digitalWrite(AIN1, HIGH);
     digitalWrite(AIN2, LOW);
     digitalWrite(BIN1, HIGH);
@@ -161,7 +134,6 @@ void spinMotor(int motorSpeed) {
   }
   if(motorSpeed == -1)
   {
-    Serial.println("Left Turn ");
     digitalWrite(AIN1, HIGH);
     digitalWrite(AIN2, LOW);
     digitalWrite(BIN1, LOW);
