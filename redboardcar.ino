@@ -67,12 +67,66 @@ void loop() {
     }
   }
 
+  //left + center + right
+  else if(cSen.read() > lineLevel && rSen.read() > lineLevel && lSen.read() > lineLevel) {
+    Serial.println("highway");
+    takeHighway();
+  }
+
   else {
     Serial.println("option not found");
   }
 }
 
-  
+void takeHighway() {
+  while(cSen.read() > lineLevel && rSen.read() > lineLevel && lSen.read() > lineLevel) {
+    spinMotor(2);
+    Serial.println("Taking Highway");
+  }
+}
+
+void spinMotor(int motorSpeed) {
+  Serial.println(motorSpeed);
+  if(motorSpeed == 1) {
+    analogWrite(PWM, 100);
+  }
+  else if (motorSpeed == 2) {
+    analogWrite(PWM, 200);
+  }
+  else {
+    analogWrite(PWM, 127);
+  }
+  if(motorSpeed >= 0)
+  {
+    Serial.println("Straight up");
+    digitalWrite(AIN1, HIGH);
+    digitalWrite(AIN2, LOW);
+    digitalWrite(BIN1, HIGH);
+    digitalWrite(BIN2, LOW);
+  }
+  if(motorSpeed == -1)
+  {
+    Serial.println("Left Turn ");
+    digitalWrite(AIN1, HIGH);
+    digitalWrite(AIN2, LOW);
+    digitalWrite(BIN1, LOW);
+    digitalWrite(BIN2, LOW);
+  }
+  if(motorSpeed == -2)
+  {
+    digitalWrite(AIN1, LOW);
+    digitalWrite(AIN2, LOW);
+    digitalWrite(BIN1, HIGH);
+    digitalWrite(BIN2, LOW);
+  }
+  if(motorSpeed == -3)
+  {
+    digitalWrite(AIN1, LOW);
+    digitalWrite(AIN2, LOW);
+    digitalWrite(BIN1, LOW);
+    digitalWrite(BIN2, LOW);
+  }
+}
 
   //Case 3: all sensors see dark
   /*if (lSen.read() > lineLevel && rSen.read() > lineLevel && cSen.read() > lineLevel)
@@ -144,41 +198,3 @@ void takeTunnel() {
     // motorWrite(-1)
   }
 }*/
-
-void spinMotor(int motorSpeed) {
-  Serial.println(motorSpeed);
-  if(motorSpeed == 1)
-    analogWrite(PWM, 100);
-  else
-    analogWrite(PWM, 127);
-  if(motorSpeed >= 0)
-  {
-    Serial.println("Straight up");
-    digitalWrite(AIN1, HIGH);
-    digitalWrite(AIN2, LOW);
-    digitalWrite(BIN1, HIGH);
-    digitalWrite(BIN2, LOW);
-  }
-  if(motorSpeed == -1)
-  {
-    Serial.println("Left Turn ");
-    digitalWrite(AIN1, HIGH);
-    digitalWrite(AIN2, LOW);
-    digitalWrite(BIN1, LOW);
-    digitalWrite(BIN2, LOW);
-  }
-  if(motorSpeed == -2)
-  {
-    digitalWrite(AIN1, LOW);
-    digitalWrite(AIN2, LOW);
-    digitalWrite(BIN1, HIGH);
-    digitalWrite(BIN2, LOW);
-  }
-  if(motorSpeed == -3)
-  {
-    digitalWrite(AIN1, LOW);
-    digitalWrite(AIN2, LOW);
-    digitalWrite(BIN1, LOW);
-    digitalWrite(BIN2, LOW);
-  }
-}
