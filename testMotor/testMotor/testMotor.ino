@@ -1,6 +1,9 @@
-const int AIN1 = 10;
-const int AIN2 = 11;
-const int PWMA = 13;
+
+const int AIN1 = 11;
+const int AIN2 = 10;
+const int BIN1 = 6;
+const int BIN2 = 5;
+const int PWM = 13;
 
 int motorSpeed = 0;
 
@@ -16,19 +19,20 @@ void setup() {
 
 void loop() {
   spinMotor(2);
-  delay(100);
-  spinMotor(1)
-  delay(10000);
+  delay(250);
+  spinMotor(1);
+  delay(40);
 }
 
 void spinMotor(int motorSpeed) {
   Serial.println(motorSpeed);
   if(motorSpeed == 1)
-    analogWrite(PWM, 75);
+    analogWrite(PWM, 0);
   else
-    analogWrite(PWM, 150);
+    analogWrite(PWM, 175);
   if(motorSpeed >= 0)
   {
+    Serial.println(motorSpeed);
     digitalWrite(AIN1, HIGH);
     digitalWrite(AIN2, LOW);
     digitalWrite(BIN1, HIGH);
