@@ -1,14 +1,16 @@
 #include <RedBot.h>
 #include <RedBotSoftwareSerial.h>
-#include <SharpIR.h>
+//#include <SharpIR.h>
 
-SharpIR LSensor = SharpIR(A3, 1080);
-SharpIR RSensor = SharpIR(A4, 1080);
-SharpIR CSensor = SharpIR(A5, 1080);
+//SharpIR LSensor = SharpIR(A3, 1080);
+//SharpIR RSensor = SharpIR(A4, 1080);
+//SharpIR CSensor = SharpIR(A5, 1080);
 
 int ldist = 0;
 int rdist = 0;
 int cdist = 0;
+
+boolean tookHighway = false;
 
 //motor1
 const int AIN1 = 11;
@@ -88,7 +90,7 @@ void loop() {
   if (lSen.read() < bgLevel && rSen.read() < bgLevel && cSen.read() < bgLevel)
   {
     Serial.println("taking tunnel");
-    takeTunnel();
+//    takeTunnel();
   }
 
   //Case 5: all sensors see red
@@ -104,20 +106,20 @@ void takeExit() {
 
 }
 
-void takeTunnel() {
+/*void takeTunnel() {
   int lbound = 100;
   int rbound = 100;
   while(lSen.read() < bgLevel && rSen.read() < bgLevel && cSen.read() < bgLevel) {
     ldist = LSensor.distance();
-    rdist = RSensor.distance();
-    if(ldist < lbound) {
+      rdist = RSensor.distance();
+  if(ldist < lbound) {
       spinMotor(-2);
     }
     if(rdist < rbound) {
       spinMotor(-1);
     }
   }
-}
+}*/
 
 void spinMotor(int motorSpeed) {
   Serial.println(motorSpeed);
