@@ -10,8 +10,6 @@ int ldist = 0;
 int rdist = 0;
 int cdist = 0;
 
-boolean tookHighway = false;
-
 //motor1
 const int AIN1 = 11;
 const int AIN2 = 10;
@@ -32,9 +30,12 @@ const int bgLevel = 400;
 const int lineLevel = 800;
 const int stopFloor = 500;
 const int stopCeiling = 600;
+const int exitLevel = 0;
+
+int whichExit = 0;
 
 void setup() {
-  tookHighway = false;
+
   pinMode(AIN1, OUTPUT);
   pinMode(AIN2, OUTPUT);
   pinMode(BIN1, OUTPUT);
@@ -45,12 +46,14 @@ void setup() {
 }
 
 void loop() {
+
   Serial.print("Left Sensor: ");
   Serial.println(lSen.read());
   Serial.print("Center Sensor: ");
   Serial.println(cSen.read());
   Serial.print("Right Sensor: ");
   Serial.println(rSen.read());
+  delay(1000);
 
   //Case 1: both white
   if(lSen.read() < bgLevel && rSen.read() < bgLevel && cSen.read() > lineLevel) {
@@ -58,20 +61,8 @@ void loop() {
     Serial.println("go straight");
   }
 
-  //shift right
-  if(lSen.read() < bgLevel && rSen.read() > lineLevel && cSen.read() < bgLevel) {
-    spinMotor(0);
-    Serial.println("shift right");
-  }
-  
-//shift right
-  if(lSen.read() < bgLevel && rSen.read() < bgLevel && cSen.read() > lineLevel) {
-    spinMotor(0);
-    Serial.println("shift left");
-  }
   //left + center
-  if(tookHighway == false && cSen.read() > lineLevel && lSen.read() > lineLevel && rSen.read() < bgLevel) {
-    spinMotor(-3);
+  if(cSen.read() > lineLevel && lSen.read() > lineLevel && rSen.read() < bgLevel) {
     Serial.println("go left");
     while(lSen.read() > lineLevel) {
       spinMotor(-1);
@@ -79,52 +70,46 @@ void loop() {
   }
 
   //right + center
-  if(tookHighway == false && cSen.read() > lineLevel && rSen.read() > lineLevel && lSen.read() < bgLevel) {
+  if(cSen.read() > lineLevel && rSen.read() > lineLevel && lSen.read() < bgLevel) {
     Serial.println("go right");
     while(rSen.read() > lineLevel) {
       spinMotor(-2);
     }
   }
-  
-  //right exit
-  if(tookHighway == true && cSen.read() > lineLevel && rSen.read() > lineLevel && lSen.read() < bgLevel) {
-    Serial.println("right exit");
-    while(rSen.read() > lineLevel)
-      spinMotor(-2);
-  }
-
-  //left exit
-  if(tookHighway == true && cSen.read() > lineLevel && rSen.read() < bgLevel && lSen.read() > lineLevel) {
-    Serial.println("left exit");
-    while(lSen.read() > lineLevel)
-      spinMotor(-1);
-  }
 
   //Case 3: all sensors see dark
-  if (tookHighway == false && lSen.read() > lineLevel && rSen.read() > lineLevel && cSen.read() > lineLevel) {
+  if (lSen.read() > lineLevel && rSen.read() > lineLevel && cSen.read() > lineLevel)
+  {
     Serial.println("taking highway");
     spinMotor(1);
-    tookHighway = true;
   }
 
   //Case 4: all sensors see nothing
-  if (lSen.read() < bgLevel && rSen.read() < bgLevel && cSen.read() < bgLevel) {
+  if (lSen.read() < bgLevel && rSen.read() < bgLevel && cSen.read() < bgLevel)
+  {
     Serial.println("taking tunnel");
     takeTunnel();
   }
 
   //Case 5: all sensors see red
-  if (lSen.read() > stopFloor && rSen.read() > stopFloor && cSen.read() > stopFloor && lSen.read() < stopCeiling && rSen.read() < stopCeiling && cSen.read() < stopCeiling) {
+  if (lSen.read() > stopFloor && rSen.read() > stopFloor && cSen.read() > stopFloor && lSen.read() < stopCeiling && rSen.read() < stopCeiling && cSen.read() < stopCeiling)
+  {
     spinMotor(-3);
   }
+}
+
+void takeExit() {
+  //after counting a certain amount of exits, run this function to turn off of the line
+  //return to loop after the function is done
+
 }
 
 void takeTunnel() {
   int lbound = 100;
   int rbound = 100;
   while(lSen.read() < bgLevel && rSen.read() < bgLevel && cSen.read() < bgLevel) {
-    int ldist = LSensor.distance();
-    int rdist = RSensor.distance();
+    ldist = LSensor.distance();
+    rdist = RSensor.distance();
     if(ldist < lbound) {
       spinMotor(-2);
     }
@@ -137,29 +122,53 @@ void takeTunnel() {
 void spinMotor(int motorSpeed) {
   Serial.println(motorSpeed);
   if(motorSpeed == 1)
-    analogWrite(PWM, 127);
-  else
     analogWrite(PWM, 100);
+  else
+    analogWrite(PWM, 127);
   if(motorSpeed >= 0)
   {
+    analogWrite(PWM, 175);
     digitalWrite(AIN1, HIGH);
     digitalWrite(AIN2, LOW);
     digitalWrite(BIN1, HIGH);
     digitalWrite(BIN2, LOW);
+    delay(250);
+    analogWrite(PWM, 0);
+    digitalWrite(AIN1, HIGH);
+    digitalWrite(AIN2, LOW);
+    digitalWrite(BIN1, HIGH);
+    digitalWrite(BIN2, LOW);
+    delay(40);
   }
   if(motorSpeed == -1)
   {
+    analogWrite(PWM, 175);
     digitalWrite(AIN1, HIGH);
     digitalWrite(AIN2, LOW);
     digitalWrite(BIN1, LOW);
     digitalWrite(BIN2, LOW);
+    delay(250);
+    analogWrite(PWM, 175);
+    digitalWrite(AIN1, HIGH);
+    digitalWrite(AIN2, LOW);
+    digitalWrite(BIN1, LOW);
+    digitalWrite(BIN2, LOW);
+    delay(40);
   }
   if(motorSpeed == -2)
   {
+    analogWrite(PWM, 175);
     digitalWrite(AIN1, LOW);
     digitalWrite(AIN2, LOW);
     digitalWrite(BIN1, HIGH);
     digitalWrite(BIN2, LOW);
+    delay(250);
+    analogWrite(PWM, 175);
+    digitalWrite(AIN1, LOW);
+    digitalWrite(AIN2, LOW);
+    digitalWrite(BIN1, HIGH);
+    digitalWrite(BIN2, LOW);
+    delay(40);
   }
   if(motorSpeed == -3)
   {
