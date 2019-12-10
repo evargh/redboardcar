@@ -129,7 +129,7 @@ void spinMotor(int motorSpeed) {
     analogWrite(PWM, 127);
   if(motorSpeed >= 0)
   {
-    analogWrite(PWM, 175);
+    analogWrite(PWM, 200);
     digitalWrite(AIN1, HIGH);
     digitalWrite(AIN2, LOW);
     digitalWrite(BIN1, HIGH);
@@ -144,13 +144,13 @@ void spinMotor(int motorSpeed) {
   }
   if(motorSpeed == -1)
   {
-    analogWrite(PWM, 175);
+    analogWrite(PWM, 200);
     digitalWrite(AIN1, HIGH);
     digitalWrite(AIN2, LOW);
     digitalWrite(BIN1, LOW);
     digitalWrite(BIN2, LOW);
     delay(250);
-    analogWrite(PWM, 175);
+    analogWrite(PWM, 0);
     digitalWrite(AIN1, HIGH);
     digitalWrite(AIN2, LOW);
     digitalWrite(BIN1, LOW);
@@ -159,13 +159,13 @@ void spinMotor(int motorSpeed) {
   }
   if(motorSpeed == -2)
   {
-    analogWrite(PWM, 175);
+    analogWrite(PWM, 200);
     digitalWrite(AIN1, LOW);
     digitalWrite(AIN2, LOW);
     digitalWrite(BIN1, HIGH);
     digitalWrite(BIN2, LOW);
     delay(250);
-    analogWrite(PWM, 175);
+    analogWrite(PWM, 0);
     digitalWrite(AIN1, LOW);
     digitalWrite(AIN2, LOW);
     digitalWrite(BIN1, HIGH);
