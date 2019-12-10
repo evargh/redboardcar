@@ -28,8 +28,8 @@ RedBotSensor lSen = RedBotSensor(A2);
 RedBotSensor cSen = RedBotSensor(A1);
 RedBotSensor rSen = RedBotSensor(A0);
 
-const int bgLevel = 400;
-const int lineLevel = 800;
+const int bgLevel = 500;
+const int lineLevel = 700;
 const int stopFloor = 500;
 const int stopCeiling = 600;
 const int exitLevel = 0;
@@ -66,17 +66,13 @@ void loop() {
   //left + center
   if(tookHighway == false && lSen.read() > lineLevel && rSen.read() < bgLevel) {
     Serial.println("go left");
-    while(lSen.read() > lineLevel) {
-      spinMotor(-1);
-    }
+    spinMotor(-1);
   }
 
   //right + center
   if(tookHighway == false && rSen.read() > lineLevel && lSen.read() < bgLevel) {
     Serial.println("go right");
-    while(rSen.read() > lineLevel) {
       spinMotor(-2);
-    }
   }
 
   //Case 3: all sensors see dark
@@ -98,6 +94,7 @@ void loop() {
   {
     spinMotor(-3);
   }
+  Serial.println(motorSpeed);
 }
 
 void takeExit() {
@@ -122,14 +119,11 @@ void takeExit() {
 }*/
 
 void spinMotor(int motorSpeed) {
+  Serial.print("SpinMotor motorspeed: ");
   Serial.println(motorSpeed);
-  if(motorSpeed == 1)
-    analogWrite(PWM, 100);
-  else
-    analogWrite(PWM, 127);
-  if(motorSpeed >= 0)
+  if(motorSpeed == 0)
   {
-    analogWrite(PWM, 200);
+    analogWrite(PWM, 255);
     digitalWrite(AIN1, HIGH);
     digitalWrite(AIN2, LOW);
     digitalWrite(BIN1, HIGH);
@@ -141,36 +135,53 @@ void spinMotor(int motorSpeed) {
     digitalWrite(BIN1, HIGH);
     digitalWrite(BIN2, LOW);
     delay(40);
+  }
+  if(motorSpeed == 1)
+  {
+    Serial.println("HIGHQWYAYY");
+    analogWrite(PWM, 255);
+    digitalWrite(AIN1, HIGH);
+    digitalWrite(AIN2, LOW);
+    digitalWrite(BIN1, HIGH);
+    digitalWrite(BIN2, LOW);
+    delay(400);
+    analogWrite(PWM, 0);
+    digitalWrite(AIN1, HIGH);
+    digitalWrite(AIN2, LOW);
+    digitalWrite(BIN1, HIGH);
+    digitalWrite(BIN2, LOW);
+    //delay(10);
   }
   if(motorSpeed == -1)
   {
-    analogWrite(PWM, 200);
+    Serial.println("turn left");
+    analogWrite(PWM, 255);
     digitalWrite(AIN1, HIGH);
     digitalWrite(AIN2, LOW);
     digitalWrite(BIN1, LOW);
     digitalWrite(BIN2, LOW);
-    delay(250);
+    delay(100);
     analogWrite(PWM, 0);
     digitalWrite(AIN1, HIGH);
     digitalWrite(AIN2, LOW);
     digitalWrite(BIN1, LOW);
     digitalWrite(BIN2, LOW);
-    delay(40);
+    //delay(40);
   }
   if(motorSpeed == -2)
   {
-    analogWrite(PWM, 200);
+    analogWrite(PWM, 255);
     digitalWrite(AIN1, LOW);
     digitalWrite(AIN2, LOW);
     digitalWrite(BIN1, HIGH);
     digitalWrite(BIN2, LOW);
-    delay(250);
+    delay(100);
     analogWrite(PWM, 0);
     digitalWrite(AIN1, LOW);
     digitalWrite(AIN2, LOW);
     digitalWrite(BIN1, HIGH);
     digitalWrite(BIN2, LOW);
-    delay(40);
+    //delay(40);
   }
   if(motorSpeed == -3)
   {
