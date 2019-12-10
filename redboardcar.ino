@@ -58,19 +58,8 @@ void loop() {
     Serial.println("go straight");
   }
 
-  //shift right
-  if(lSen.read() < bgLevel && rSen.read() > lineLevel && cSen.read() < bgLevel) {
-    spinMotor(0);
-    Serial.println("shift right");
-  }
-  
-//shift right
-  if(lSen.read() < bgLevel && rSen.read() < bgLevel && cSen.read() > lineLevel) {
-    spinMotor(0);
-    Serial.println("shift left");
-  }
   //left + center
-  if(tookHighway == false && cSen.read() > lineLevel && lSen.read() > lineLevel && rSen.read() < bgLevel) {
+  if(tookHighway == false && lSen.read() > lineLevel && rSen.read() < bgLevel) {
     spinMotor(-3);
     Serial.println("go left");
     while(lSen.read() > lineLevel) {
@@ -79,7 +68,7 @@ void loop() {
   }
 
   //right + center
-  if(tookHighway == false && cSen.read() > lineLevel && rSen.read() > lineLevel && lSen.read() < bgLevel) {
+  if(tookHighway == false && rSen.read() > lineLevel && lSen.read() < bgLevel) {
     Serial.println("go right");
     while(rSen.read() > lineLevel) {
       spinMotor(-2);
