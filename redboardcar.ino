@@ -62,7 +62,7 @@ void loop() {
   }
 
   //left + center
-  if(tookHighway == false && lSen.read() > lineLevel && rSen.read() < bgLevel) {
+  if(lSen.read() > lineLevel && rSen.read() < bgLevel) {
     Serial.println("go left");
     while(lSen.read() > lineLevel) {
       spinMotor(-1);
@@ -70,7 +70,7 @@ void loop() {
   }
 
   //right + center
-  if(tookHighway == false && rSen.read() > lineLevel && lSen.read() < bgLevel) {
+  if(rSen.read() > lineLevel && lSen.read() < bgLevel) {
     Serial.println("go right");
     while(rSen.read() > lineLevel) {
       spinMotor(-2);
@@ -78,9 +78,8 @@ void loop() {
   }
 
   //Case 3: all sensors see dark
-  if (lSen.read() > lineLevel && rSen.read() > lineLevel && cSen.read() > lineLevel)
-  {
-    Serial.println("taking highway");
+  if (lSen.read() > lineLevel && rSen.read() > lineLevel && cSen.read() > lineLevel) { 
+    Serial.println("taking highway")
     spinMotor(1);
   }
 

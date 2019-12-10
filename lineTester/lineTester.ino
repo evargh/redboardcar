@@ -8,7 +8,6 @@ RedBotSensor rSen = RedBotSensor(A0);
 
 void setup() {
   Serial.begin(9600);
-  
 }
 
 void loop() {
@@ -20,5 +19,3 @@ void loop() {
   Serial.println(rSen.read());
   delay(1000);
 }
-
-//123
