@@ -74,9 +74,11 @@ void loop() {
   Serial.print("distance: ");
   Serial.println(distance);
   delay(1000);
-if (0 < tiger < 13) //replace somevalue with an actual value
+if (0 < distance) //replace somevalue with an actual value
   {
-    uturn();
+    if ( 13 > distance) {
+      uturn();
+    }
   }
 
   //Case 1: both white
@@ -153,9 +155,85 @@ void uturn()
     digitalWrite(AIN1, HIGH);
     digitalWrite(AIN2, LOW);
     digitalWrite(BIN1, LOW);
-    digitalWrite(BIN2, LOW);
+    digitalWrite(BIN2, HIGH);
     //delay(40);
     if (lSen.read() < bgLevel && rSen.read() < bgLevel && cSen.read() > lineLevel) {
+      inturn = false;
+    }
+    } while (inturn == true);
+
+    instraight = true;
+    do {
+    analogWrite(PWM, 150);
+    digitalWrite(AIN1, HIGH);
+    digitalWrite(AIN2, LOW);
+    digitalWrite(BIN1, HIGH);
+    digitalWrite(BIN2, LOW);
+    delay(5);
+    analogWrite(PWM, 0);
+    digitalWrite(AIN1, HIGH);
+    digitalWrite(AIN2, LOW);
+    digitalWrite(BIN1, HIGH);
+    digitalWrite(BIN2, LOW);
+    //delay(40);
+    if (rSen.read() > lineLevel || lSen.read() > lineLevel) {
+      instraight = false;
+    }
+    } while (instraight == true);
+
+    inturn = true;
+    do {
+    analogWrite(PWM, 150);
+    digitalWrite(AIN1, LOW);
+    digitalWrite(AIN2, LOW);
+    digitalWrite(BIN1, HIGH);
+    digitalWrite(BIN2, LOW);
+    delay(6);
+    analogWrite(PWM, 0);
+    digitalWrite(AIN1, LOW);
+    digitalWrite(AIN2, LOW);
+    digitalWrite(BIN1, HIGH);
+    digitalWrite(BIN2, LOW);
+    //delay(40);
+  if (lSen.read() < bgLevel && rSen.read() < bgLevel && cSen.read() > lineLevel) {
+      inturn = false;
+    }
+    } while (inturn == true);
+
+    instraight = true;
+    do {
+    analogWrite(PWM, 150);
+    digitalWrite(AIN1, HIGH);
+    digitalWrite(AIN2, LOW);
+    digitalWrite(BIN1, HIGH);
+    digitalWrite(BIN2, LOW);
+    delay(5);
+    analogWrite(PWM, 0);
+    digitalWrite(AIN1, HIGH);
+    digitalWrite(AIN2, LOW);
+    digitalWrite(BIN1, HIGH);
+    digitalWrite(BIN2, LOW);
+    //delay(40);
+    if (rSen.read() > lineLevel || lSen.read() > lineLevel) {
+      instraight = false;
+    }
+    } while (instraight == true);
+
+    inturn = true;
+    do {
+    analogWrite(PWM, 150);
+    digitalWrite(AIN1, LOW);
+    digitalWrite(AIN2, LOW);
+    digitalWrite(BIN1, HIGH);
+    digitalWrite(BIN2, LOW);
+    delay(6);
+    analogWrite(PWM, 0);
+    digitalWrite(AIN1, LOW);
+    digitalWrite(AIN2, LOW);
+    digitalWrite(BIN1, HIGH);
+    digitalWrite(BIN2, LOW);
+    //delay(40);
+  if (lSen.read() < bgLevel && rSen.read() < bgLevel && cSen.read() > lineLevel) {
       inturn = false;
     }
     } while (inturn == true);
@@ -289,6 +367,7 @@ void spinMotor(int motorSpeed) {
   {
     inturn = true;
     do {
+    Serial.println("turn right");
     analogWrite(PWM, 150);
     digitalWrite(AIN1, LOW);
     digitalWrite(AIN2, LOW);
