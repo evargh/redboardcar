@@ -22,7 +22,10 @@ const int AIN2 = 10;
 //motor2
 const int BIN1 = 6;
 const int BIN2 = 5;
-
+int distance = 0;
+int duration = 0;
+const int trigPin = 3; // idk what pins we have avialbe but set these to open pins
+const int echoPin = 4;
 const int PWM = 13;
 
 int motorSpeed = 0;
@@ -36,8 +39,21 @@ const int lineLevel = 700;
 const int stopFloor = 500;
 const int stopCeiling = 600;
 const int exitLevel = 0;
+const int Somevalue = 16;
 
 int whichExit = 0;
+
+int calculateDistance(){ 
+ digitalWrite(trigPin, LOW); 
+  delayMicroseconds(2);
+  // Sets the trigPin on HIGH state for 10 micro seconds
+  digitalWrite(trigPin, HIGH); 
+  delayMicroseconds(10);
+  digitalWrite(trigPin, LOW);
+  duration = pulseIn(echoPin, HIGH); // Reads the echoPin, returns the sound wave travel time in microseconds
+  distance= duration*0.034/2;
+  return distance;
+}
 
 void setup() {
 
@@ -46,6 +62,8 @@ void setup() {
   pinMode(BIN1, OUTPUT);
   pinMode(BIN2, OUTPUT);
   pinMode(PWM, OUTPUT);
+ pinMode(trigPin, OUTPUT); // Sets the trigPin as an Output
+ pinMode(echoPin, INPUT); // Sets the echoPin as an Input
 
   Serial.begin(9600);
 }
@@ -59,6 +77,11 @@ void loop() {
   Serial.print("Right Sensor: ");
   Serial.println(rSen.read());
   delay(1000);
+
+distance = calculateDistance();
+if (distance < Somevalue) //replace somevalue with an actual value
+{ uturn();}
+
 
   //Case 1: both white
   if(lSen.read() < bgLevel && rSen.read() < bgLevel && cSen.read() > lineLevel) {
@@ -97,12 +120,52 @@ void loop() {
     spinMotor(-3);
   }
   Serial.println(motorSpeed);
+
+  if (rSen.read() > lineLevel && cSen.read() > lineLevel) { 
+    Serial.println("exiting");
+    takeExit();
+  }
+
+  
 }
 
 void takeExit() {
-  //after counting a certain amount of exits, run this function to turn off of the line
-  //return to loop after the function is done
-
+   analogWrite(PWM, 200);
+    digitalWrite(AIN1, LOW);
+    digitalWrite(AIN2, LOW);
+    digitalWrite(BIN1, HIGH);
+    digitalWrite(BIN2, LOW);
+    delay(300);
+    analogWrite(PWM, 0);
+    digitalWrite(AIN1, LOW);
+    digitalWrite(AIN2, LOW);
+    digitalWrite(BIN1, HIGH);
+    digitalWrite(BIN2, LOW);
+    delay(40);
+      analogWrite(PWM, 200);
+    digitalWrite(AIN1, LOW);
+    digitalWrite(AIN2, LOW);
+    digitalWrite(BIN1, HIGH);
+    digitalWrite(BIN2, LOW);
+    delay(200);
+    analogWrite(PWM, 0);
+    digitalWrite(AIN1, LOW);
+    digitalWrite(AIN2, LOW);
+    digitalWrite(BIN1, HIGH);
+    digitalWrite(BIN2, LOW);
+    delay(40);
+    analogWrite(PWM, 200);
+    digitalWrite(AIN1, LOW);
+    digitalWrite(AIN2, LOW);
+    digitalWrite(BIN1, HIGH);
+    digitalWrite(BIN2, LOW);
+    delay(200);
+    analogWrite(PWM, 0);
+    digitalWrite(AIN1, LOW);
+    digitalWrite(AIN2, LOW);
+    digitalWrite(BIN1, HIGH);
+    digitalWrite(BIN2, LOW);
+    delay(40);
 }
 
 /*void takeTunnel() {
@@ -119,6 +182,22 @@ void takeExit() {
     }
   }
 }*/
+void uturn() 
+{
+   analogWrite(PWM, 200);
+    digitalWrite(AIN1, HIGH);
+    digitalWrite(AIN2, LOW);
+    digitalWrite(BIN1, LOW);
+    digitalWrite(BIN2, HIGH);
+    delay(1000);
+    analogWrite(PWM, 0);
+    digitalWrite(AIN1, HIGH);
+    digitalWrite(AIN2, LOW);
+    digitalWrite(BIN1, LOW);
+    digitalWrite(BIN2, LOW);
+    delay(40);
+}
+  
 
 void spinMotor(int motorSpeed) {
   Serial.print("SpinMotor motorspeed: ");
@@ -259,4 +338,6 @@ void spinMotor(int motorSpeed) {
     digitalWrite(BIN1, LOW);
     digitalWrite(BIN2, LOW);
   }
+  
+
 }

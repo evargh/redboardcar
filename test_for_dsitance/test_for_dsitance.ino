@@ -36,7 +36,7 @@ const int lineLevel = 700;
 const int stopFloor = 500;
 const int stopCeiling = 600;
 const int exitLevel = 0;
-const int Somevalue = 200;
+const int Somevalue = 16;
 
 int whichExit = 0;
 
