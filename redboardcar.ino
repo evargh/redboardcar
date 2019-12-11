@@ -1,10 +1,10 @@
 #include <RedBot.h>
 #include <RedBotSoftwareSerial.h>
-//#include <SharpIR.h>
+#include <SharpIR.h>
 
-//SharpIR LSensor = SharpIR(A3, 1080);
-//SharpIR RSensor = SharpIR(A4, 1080);
-//SharpIR CSensor = SharpIR(A5, 1080);
+SharpIR LSensor = SharpIR(A3, 1080);
+SharpIR RSensor = SharpIR(A3, 1080);
+SharpIR CSensor = SharpIR(A3, 1080);
 
 int ldist = 0;
 int rdist = 0;
@@ -69,7 +69,7 @@ void loop() {
   Serial.println(rSen.read());
   
 
-  tiger = calculateDistance();
+  /*tiger = calculateDistance();
   
   Serial.print("distance: ");
   Serial.println(distance);
@@ -79,6 +79,12 @@ if (0 < distance) //replace somevalue with an actual value
     if ( 13 > distance) {
       uturn();
     }
+  }*/
+
+  Serial.print("distance: ");
+  Serial.println(CSensor.distance());
+  if (0 < CSensor.distance() && CSensor.distance() < 6) {
+    uturn();
   }
 
   //Case 1: both white
@@ -142,6 +148,17 @@ void takeExit() {
 }*/
 void uturn() 
 {
+    analogWrite(PWM, 255);
+    digitalWrite(AIN1, HIGH);
+    digitalWrite(AIN2, LOW);
+    digitalWrite(BIN1, LOW);
+    digitalWrite(BIN2, HIGH);
+    delay(40);
+    analogWrite(PWM, 0);
+    digitalWrite(AIN1, HIGH);
+    digitalWrite(AIN2, LOW);
+    digitalWrite(BIN1, LOW);
+    digitalWrite(BIN2, HIGH);
     inturn = true;
     do {
     Serial.println("uturn biittch");
@@ -164,7 +181,8 @@ void uturn()
 
     instraight = true;
     do {
-    analogWrite(PWM, 150);
+    Serial.println("return from uturnu");
+    analogWrite(PWM, 255);
     digitalWrite(AIN1, HIGH);
     digitalWrite(AIN2, LOW);
     digitalWrite(BIN1, HIGH);
@@ -176,14 +194,15 @@ void uturn()
     digitalWrite(BIN1, HIGH);
     digitalWrite(BIN2, LOW);
     //delay(40);
-    if (rSen.read() > lineLevel || lSen.read() > lineLevel) {
+    if (rSen.read() > lineLevel && lSen.read() > lineLevel) {
       instraight = false;
     }
     } while (instraight == true);
 
     inturn = true;
     do {
-    analogWrite(PWM, 150);
+    Serial.println("exit the exit");
+    analogWrite(PWM, 255);
     digitalWrite(AIN1, LOW);
     digitalWrite(AIN2, LOW);
     digitalWrite(BIN1, HIGH);
@@ -202,7 +221,7 @@ void uturn()
 
     instraight = true;
     do {
-    analogWrite(PWM, 150);
+    analogWrite(PWM, 255);
     digitalWrite(AIN1, HIGH);
     digitalWrite(AIN2, LOW);
     digitalWrite(BIN1, HIGH);
@@ -221,7 +240,7 @@ void uturn()
 
     inturn = true;
     do {
-    analogWrite(PWM, 150);
+    analogWrite(PWM, 255);
     digitalWrite(AIN1, LOW);
     digitalWrite(AIN2, LOW);
     digitalWrite(BIN1, HIGH);
@@ -258,7 +277,7 @@ void spinMotor(int motorSpeed) {
   {
     instraight = true;
     do {
-    analogWrite(PWM, 150);
+    analogWrite(PWM, 255);
     digitalWrite(AIN1, HIGH);
     digitalWrite(AIN2, LOW);
     digitalWrite(BIN1, HIGH);
@@ -294,7 +313,7 @@ void spinMotor(int motorSpeed) {
     digitalWrite(BIN2, LOW);
     
     while (lSen.read() < bgLevel && rSen.read() > lineLevel && cSen.read() > lineLevel) {
-      analogWrite(PWM, 150);
+      analogWrite(PWM, 255);
       digitalWrite(AIN1, LOW);
       digitalWrite(AIN2, LOW);
       digitalWrite(BIN1, HIGH);
@@ -308,7 +327,7 @@ void spinMotor(int motorSpeed) {
     }
     
     while (lSen.read() > lineLevel && rSen.read() < bgLevel && cSen.read() > lineLevel) {
-      analogWrite(PWM, 150);
+      analogWrite(PWM, 255);
       digitalWrite(AIN1, HIGH);
       digitalWrite(AIN2, LOW);
       digitalWrite(BIN1, LOW);
@@ -344,7 +363,7 @@ void spinMotor(int motorSpeed) {
     inturn = true;
     do {
     Serial.println("turn left");
-    analogWrite(PWM, 150);
+    analogWrite(PWM, 255);
     digitalWrite(AIN1, HIGH);
     digitalWrite(AIN2, LOW);
     digitalWrite(BIN1, LOW);
@@ -368,7 +387,7 @@ void spinMotor(int motorSpeed) {
     inturn = true;
     do {
     Serial.println("turn right");
-    analogWrite(PWM, 150);
+    analogWrite(PWM, 255);
     digitalWrite(AIN1, LOW);
     digitalWrite(AIN2, LOW);
     digitalWrite(BIN1, HIGH);
