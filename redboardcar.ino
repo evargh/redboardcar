@@ -10,6 +10,9 @@ int ldist = 0;
 int rdist = 0;
 int cdist = 0;
 
+boolean inturn = false;
+boolean instraight = false;
+boolean inhighway = false;
 boolean tookHighway = false;
 
 //motor1
@@ -77,7 +80,7 @@ void loop() {
 
   //Case 3: all sensors see dark
   if (lSen.read() > lineLevel && rSen.read() > lineLevel && cSen.read() > lineLevel) { 
-    Serial.println("taking highway")
+    Serial.println("taking highway");
     spinMotor(1);
   }
 
@@ -122,66 +125,133 @@ void spinMotor(int motorSpeed) {
   Serial.println(motorSpeed);
   if(motorSpeed == 0)
   {
-    analogWrite(PWM, 255);
+    instraight = true;
+    do {
+    analogWrite(PWM, 150);
     digitalWrite(AIN1, HIGH);
     digitalWrite(AIN2, LOW);
     digitalWrite(BIN1, HIGH);
     digitalWrite(BIN2, LOW);
-    delay(250);
+    delay(5);
     analogWrite(PWM, 0);
     digitalWrite(AIN1, HIGH);
     digitalWrite(AIN2, LOW);
     digitalWrite(BIN1, HIGH);
     digitalWrite(BIN2, LOW);
-    delay(40);
+    //delay(40);
+    if (rSen.read() > lineLevel || lSen.read() > lineLevel) {
+      instraight = false;
+    }
+    } while (instraight == true);
   }
   if(motorSpeed == 1)
   {
+    inhighway = true;
+    do {
     Serial.println("HIGHQWYAYY");
+    Serial.print("Left Sensor: ");
+    Serial.println(lSen.read());
+    Serial.print("Center Sensor: ");
+    Serial.println(cSen.read());
+    Serial.print("Right Sensor: ");
+    Serial.println(rSen.read());
+    
     analogWrite(PWM, 255);
     digitalWrite(AIN1, HIGH);
     digitalWrite(AIN2, LOW);
     digitalWrite(BIN1, HIGH);
     digitalWrite(BIN2, LOW);
-    delay(400);
+    
+    while (lSen.read() < bgLevel && rSen.read() > lineLevel && cSen.read() > lineLevel) {
+      analogWrite(PWM, 150);
+      digitalWrite(AIN1, LOW);
+      digitalWrite(AIN2, LOW);
+      digitalWrite(BIN1, HIGH);
+      digitalWrite(BIN2, LOW);
+      delay(6);
+      analogWrite(PWM, 0);
+      digitalWrite(AIN1, LOW);
+      digitalWrite(AIN2, LOW);
+      digitalWrite(BIN1, HIGH);
+      digitalWrite(BIN2, LOW);
+    }
+    
+    while (lSen.read() > lineLevel && rSen.read() < bgLevel && cSen.read() > lineLevel) {
+      analogWrite(PWM, 150);
+      digitalWrite(AIN1, HIGH);
+      digitalWrite(AIN2, LOW);
+      digitalWrite(BIN1, LOW);
+      digitalWrite(BIN2, LOW);
+      delay(6);
+      analogWrite(PWM, 0);
+      digitalWrite(AIN1, HIGH);
+      digitalWrite(AIN2, LOW);
+      digitalWrite(BIN1, LOW);
+      digitalWrite(BIN2, LOW);
+    } 
+    
+    delay(100);
     analogWrite(PWM, 0);
     digitalWrite(AIN1, HIGH);
     digitalWrite(AIN2, LOW);
     digitalWrite(BIN1, HIGH);
     digitalWrite(BIN2, LOW);
     //delay(10);
+    
+    
+    if (lSen.read() < bgLevel && rSen.read() < bgLevel && cSen.read() > lineLevel) {
+      inhighway = false;
+    }
+    
+    } while (inhighway == true);
   }
+
+  //Left turn
   if(motorSpeed == -1)
   {
+    inturn = true;
+    do {
     Serial.println("turn left");
-    analogWrite(PWM, 255);
+    analogWrite(PWM, 150);
     digitalWrite(AIN1, HIGH);
     digitalWrite(AIN2, LOW);
     digitalWrite(BIN1, LOW);
     digitalWrite(BIN2, LOW);
-    delay(100);
+    delay(6);
     analogWrite(PWM, 0);
     digitalWrite(AIN1, HIGH);
     digitalWrite(AIN2, LOW);
     digitalWrite(BIN1, LOW);
     digitalWrite(BIN2, LOW);
     //delay(40);
+    if (lSen.read() < bgLevel && rSen.read() < bgLevel && cSen.read() > lineLevel) {
+      inturn = false;
+    }
+    } while (inturn == true);
   }
+
+  //Right turn
   if(motorSpeed == -2)
   {
-    analogWrite(PWM, 255);
+    inturn = true;
+    do {
+    analogWrite(PWM, 150);
     digitalWrite(AIN1, LOW);
     digitalWrite(AIN2, LOW);
     digitalWrite(BIN1, HIGH);
     digitalWrite(BIN2, LOW);
-    delay(100);
+    delay(6);
     analogWrite(PWM, 0);
     digitalWrite(AIN1, LOW);
     digitalWrite(AIN2, LOW);
     digitalWrite(BIN1, HIGH);
     digitalWrite(BIN2, LOW);
     //delay(40);
-  }
+  if (lSen.read() < bgLevel && rSen.read() < bgLevel && cSen.read() > lineLevel) {
+      inturn = false;
+    }
+    } while (inturn == true);
+    }
   if(motorSpeed == -3)
   {
     digitalWrite(AIN1, LOW);
