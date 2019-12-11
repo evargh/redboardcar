@@ -3,8 +3,8 @@
 #include <SharpIR.h>
 
 SharpIR LSensor = SharpIR(A3, 1080);
-SharpIR RSensor = SharpIR(A3, 1080);
-SharpIR CSensor = SharpIR(A3, 1080);
+SharpIR RSensor = SharpIR(A4, 1080);
+SharpIR CSensor = SharpIR(A5, 1080);
 
 int ldist = 0;
 int rdist = 0;
@@ -22,12 +22,6 @@ const int AIN2 = 10;
 //motor2
 const int BIN1 = 6;
 const int BIN2 = 5;
-
-int distance =0;
-int tiger = 0;
-int duration =0;
-const int trigPin = 3;
-const int echoPin = 4;
 
 const int PWM = 13;
 
@@ -53,8 +47,6 @@ void setup() {
   pinMode(BIN1, OUTPUT);
   pinMode(BIN2, OUTPUT);
   pinMode(PWM, OUTPUT);
-   pinMode(trigPin, OUTPUT); // Sets the trigPin as an Output
- pinMode(echoPin, INPUT); // Sets the echoPin as an Input
 
   Serial.begin(9600);
 }
@@ -83,7 +75,7 @@ if (0 < distance) //replace somevalue with an actual value
 
   Serial.print("distance: ");
   Serial.println(CSensor.distance());
-  if (0 < CSensor.distance() && CSensor.distance() < 6) {
+  if (0 < CSensor.distance() && CSensor.distance() < 8) {
     uturn();
   }
 
@@ -115,7 +107,7 @@ if (0 < distance) //replace somevalue with an actual value
   if (lSen.read() < bgLevel && rSen.read() < bgLevel && cSen.read() < bgLevel)
   {
     Serial.println("taking tunnel");
-//    takeTunnel();
+    takeTunnel();
   }
 
   //Case 5: all sensors see red
@@ -132,9 +124,9 @@ void takeExit() {
 
 }
 
-/*void takeTunnel() {
-  int lbound = 100;
-  int rbound = 100;
+void takeTunnel() {
+  int lbound = 10;
+  int rbound = 10;
   while(lSen.read() < bgLevel && rSen.read() < bgLevel && cSen.read() < bgLevel) {
     ldist = LSensor.distance();
       rdist = RSensor.distance();
@@ -145,7 +137,7 @@ void takeExit() {
       spinMotor(-1);
     }
   }
-}*/
+}
 void uturn() 
 {
     analogWrite(PWM, 255);
@@ -233,7 +225,7 @@ void uturn()
     digitalWrite(BIN1, HIGH);
     digitalWrite(BIN2, LOW);
     //delay(40);
-    if (rSen.read() > lineLevel || lSen.read() > lineLevel) {
+    if (rSen.read() > lineLevel && lSen.read() > lineLevel) {
       instraight = false;
     }
     } while (instraight == true);
@@ -256,18 +248,6 @@ void uturn()
       inturn = false;
     }
     } while (inturn == true);
-}
-
-int calculateDistance(){ 
- digitalWrite(trigPin, LOW); 
-  delayMicroseconds(2);
-  // Sets the trigPin on HIGH state for 10 micro seconds
-  digitalWrite(trigPin, HIGH); 
-  delayMicroseconds(10);
-  digitalWrite(trigPin, LOW);
-  duration = pulseIn(echoPin, HIGH); // Reads the echoPin, returns the sound wave travel time in microseconds
-  distance= duration*0.034/2;
-  return distance;
 }
 
 void spinMotor(int motorSpeed) {
