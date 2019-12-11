@@ -288,7 +288,7 @@ void spinMotor(int motorSpeed) {
   {
     instraight = true;
     do {
-    analogWrite(PWM, 255);
+    analogWrite(PWM, 150);
     digitalWrite(AIN1, HIGH);
     digitalWrite(AIN2, LOW);
     digitalWrite(BIN1, HIGH);
