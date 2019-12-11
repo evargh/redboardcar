@@ -74,8 +74,9 @@ void loop() {
   Serial.print("distance: ");
   Serial.println(distance);
   delay(1000);
-if (tiger < 18) //replace somevalue with an actual value
-  { uturn();
+if (0 < tiger < 13) //replace somevalue with an actual value
+  {
+    uturn();
   }
 
   //Case 1: both white
@@ -139,18 +140,25 @@ void takeExit() {
 }*/
 void uturn() 
 {
-   analogWrite(PWM, 200);
+    inturn = true;
+    do {
+    Serial.println("uturn biittch");
+    analogWrite(PWM, 255);
     digitalWrite(AIN1, HIGH);
     digitalWrite(AIN2, LOW);
     digitalWrite(BIN1, LOW);
     digitalWrite(BIN2, HIGH);
-    delay(650);
+    delay(10);
     analogWrite(PWM, 0);
     digitalWrite(AIN1, HIGH);
     digitalWrite(AIN2, LOW);
     digitalWrite(BIN1, LOW);
     digitalWrite(BIN2, LOW);
-    delay(40);
+    //delay(40);
+    if (lSen.read() < bgLevel && rSen.read() < bgLevel && cSen.read() > lineLevel) {
+      inturn = false;
+    }
+    } while (inturn == true);
 }
 
 int calculateDistance(){ 
