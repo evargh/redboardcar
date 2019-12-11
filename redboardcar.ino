@@ -34,14 +34,13 @@ RedBotSensor rSen = RedBotSensor(A0);
 const int bgLevel = 500;
 const int lineLevel = 700;
 const int stopFloor = 500;
-const int stopCeiling = 600;
+const int stopCeiling = 700;
 const int exitLevel = 0;
 const int Somevalue = 20;
 
 int whichExit = 0;
 
 void setup() {
-
   pinMode(AIN1, OUTPUT);
   pinMode(AIN2, OUTPUT);
   pinMode(BIN1, OUTPUT);
@@ -59,26 +58,23 @@ void loop() {
   Serial.println(cSen.read());
   Serial.print("Right Sensor: ");
   Serial.println(rSen.read());
-  
-
-  /*tiger = calculateDistance();
-  
-  Serial.print("distance: ");
-  Serial.println(distance);
-  delay(1000);
-if (0 < distance) //replace somevalue with an actual value
-  {
-    if ( 13 > distance) {
-      uturn();
-    }
-  }*/
 
   Serial.print("distance: ");
   Serial.println(CSensor.distance());
+  Serial.print("left distance: ");
+  Serial.println(LSensor.distance());
+  Serial.print("right distance: ");
+  Serial.println(RSensor.distance());
   if (0 < CSensor.distance() && CSensor.distance() < 8) {
     uturn();
   }
-
+  
+  //Case 4: all sensors see nothing
+  if (lSen.read() < bgLevel && rSen.read() < bgLevel && cSen.read() < bgLevel)
+  {
+    Serial.println("taking tunnel");
+    takeTunnel();
+  }
   //Case 1: both white
   if(lSen.read() < bgLevel && rSen.read() < bgLevel && cSen.read() > lineLevel) {
     spinMotor(0);
@@ -103,15 +99,10 @@ if (0 < distance) //replace somevalue with an actual value
     spinMotor(1);
   }
 
-  //Case 4: all sensors see nothing
-  if (lSen.read() < bgLevel && rSen.read() < bgLevel && cSen.read() < bgLevel)
-  {
-    Serial.println("taking tunnel");
-    takeTunnel();
-  }
+
 
   //Case 5: all sensors see red
-  if (lSen.read() > stopFloor && rSen.read() > stopFloor && cSen.read() > stopFloor && lSen.read() < stopCeiling && rSen.read() < stopCeiling && cSen.read() < stopCeiling)
+  if (cSen.read() > stopFloor && cSen.read() < stopCeiling)
   {
     spinMotor(-3);
   }
@@ -125,16 +116,56 @@ void takeExit() {
 }
 
 void takeTunnel() {
-  int lbound = 10;
-  int rbound = 10;
+  int lbound = 15;
+  int rbound = 15;
   while(lSen.read() < bgLevel && rSen.read() < bgLevel && cSen.read() < bgLevel) {
+    Serial.println("in tunnel zzzzzzzsazzzzzzzzzzzzzzzzzzzzzzzzz");
+    //spinMotor(0);
     ldist = LSensor.distance();
-      rdist = RSensor.distance();
-  if(ldist < lbound) {
-      spinMotor(-2);
+    rdist = RSensor.distance();
+    Serial.println(ldist);
+    Serial.println(rdist);
+    if((ldist < lbound && rdist < rbound) || (ldist > lbound && rdist > rbound)) {
+      Serial.println("tunnel straight");
+      analogWrite(PWM, 255);
+      digitalWrite(AIN1, HIGH);
+      digitalWrite(AIN2, LOW);
+      digitalWrite(BIN1, HIGH);
+      digitalWrite(BIN2, LOW);
+      delay(12);
+      analogWrite(PWM, 0);
+      digitalWrite(AIN1, HIGH);
+      digitalWrite(AIN2, LOW);
+      digitalWrite(BIN1, HIGH);
+      digitalWrite(BIN2, LOW);
     }
-    if(rdist < rbound) {
-      spinMotor(-1);
+    else if((ldist < lbound && rdist > rbound)) {
+      Serial.println("tunnel right");
+      analogWrite(PWM, 255);
+      digitalWrite(AIN1, LOW);
+      digitalWrite(AIN2, LOW);
+      digitalWrite(BIN1, HIGH);
+      digitalWrite(BIN2, LOW);
+      delay(20);
+      analogWrite(PWM, 0);
+      digitalWrite(AIN1, LOW);
+      digitalWrite(AIN2, LOW);
+      digitalWrite(BIN1, HIGH);
+      digitalWrite(BIN2, LOW);
+    }
+    else if((ldist > lbound && rdist < rbound)) {
+      Serial.println("tunnel left");
+      analogWrite(PWM, 255);
+      digitalWrite(AIN1, HIGH);
+      digitalWrite(AIN2, LOW);
+      digitalWrite(BIN1, LOW);
+      digitalWrite(BIN2, LOW);
+      delay(20);
+      analogWrite(PWM, 0);
+      digitalWrite(AIN1, HIGH);
+      digitalWrite(AIN2, LOW);
+      digitalWrite(BIN1, LOW);
+      digitalWrite(BIN2, LOW);
     }
   }
 }
@@ -179,7 +210,7 @@ void uturn()
     digitalWrite(AIN2, LOW);
     digitalWrite(BIN1, HIGH);
     digitalWrite(BIN2, LOW);
-    delay(5);
+    delay(7);
     analogWrite(PWM, 0);
     digitalWrite(AIN1, HIGH);
     digitalWrite(AIN2, LOW);
@@ -199,7 +230,7 @@ void uturn()
     digitalWrite(AIN2, LOW);
     digitalWrite(BIN1, HIGH);
     digitalWrite(BIN2, LOW);
-    delay(6);
+    delay(7);
     analogWrite(PWM, 0);
     digitalWrite(AIN1, LOW);
     digitalWrite(AIN2, LOW);
@@ -218,7 +249,7 @@ void uturn()
     digitalWrite(AIN2, LOW);
     digitalWrite(BIN1, HIGH);
     digitalWrite(BIN2, LOW);
-    delay(5);
+    delay(7);
     analogWrite(PWM, 0);
     digitalWrite(AIN1, HIGH);
     digitalWrite(AIN2, LOW);
@@ -237,7 +268,7 @@ void uturn()
     digitalWrite(AIN2, LOW);
     digitalWrite(BIN1, HIGH);
     digitalWrite(BIN2, LOW);
-    delay(6);
+    delay(7);
     analogWrite(PWM, 0);
     digitalWrite(AIN1, LOW);
     digitalWrite(AIN2, LOW);
@@ -262,14 +293,14 @@ void spinMotor(int motorSpeed) {
     digitalWrite(AIN2, LOW);
     digitalWrite(BIN1, HIGH);
     digitalWrite(BIN2, LOW);
-    delay(5);
+    delay(6);
     analogWrite(PWM, 0);
     digitalWrite(AIN1, HIGH);
     digitalWrite(AIN2, LOW);
     digitalWrite(BIN1, HIGH);
     digitalWrite(BIN2, LOW);
     //delay(40);
-    if (rSen.read() > lineLevel || lSen.read() > lineLevel) {
+    if (rSen.read() > lineLevel || lSen.read() > lineLevel || (lSen.read() < bgLevel && rSen.read() < bgLevel && cSen.read() < bgLevel)) {
       instraight = false;
     }
     } while (instraight == true);
@@ -298,7 +329,7 @@ void spinMotor(int motorSpeed) {
       digitalWrite(AIN2, LOW);
       digitalWrite(BIN1, HIGH);
       digitalWrite(BIN2, LOW);
-      delay(6);
+      delay(7);
       analogWrite(PWM, 0);
       digitalWrite(AIN1, LOW);
       digitalWrite(AIN2, LOW);
@@ -312,7 +343,7 @@ void spinMotor(int motorSpeed) {
       digitalWrite(AIN2, LOW);
       digitalWrite(BIN1, LOW);
       digitalWrite(BIN2, LOW);
-      delay(6);
+      delay(7);
       analogWrite(PWM, 0);
       digitalWrite(AIN1, HIGH);
       digitalWrite(AIN2, LOW);
@@ -348,7 +379,7 @@ void spinMotor(int motorSpeed) {
     digitalWrite(AIN2, LOW);
     digitalWrite(BIN1, LOW);
     digitalWrite(BIN2, LOW);
-    delay(6);
+    delay(7);
     analogWrite(PWM, 0);
     digitalWrite(AIN1, HIGH);
     digitalWrite(AIN2, LOW);
@@ -372,7 +403,7 @@ void spinMotor(int motorSpeed) {
     digitalWrite(AIN2, LOW);
     digitalWrite(BIN1, HIGH);
     digitalWrite(BIN2, LOW);
-    delay(6);
+    delay(7);
     analogWrite(PWM, 0);
     digitalWrite(AIN1, LOW);
     digitalWrite(AIN2, LOW);

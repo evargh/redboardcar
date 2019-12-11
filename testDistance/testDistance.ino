@@ -1,7 +1,7 @@
 #include <SharpIR.h>
 
 SharpIR LSensor = SharpIR(A3, 1080);
-SharpIR RSensor = SharpIR(A4, 1080);
+SharpIR RSensor = SharpIR(A5, 1080);
 
 void setup() {
   Serial.begin(9600);
