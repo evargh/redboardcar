@@ -23,8 +23,9 @@ const int AIN2 = 10;
 const int BIN1 = 6;
 const int BIN2 = 5;
 
-int distance = 0;
-int duration = 0;
+int distance =0;
+int tiger = 0;
+int duration =0;
 const int trigPin = 3;
 const int echoPin = 4;
 
@@ -41,7 +42,7 @@ const int lineLevel = 700;
 const int stopFloor = 500;
 const int stopCeiling = 600;
 const int exitLevel = 0;
-const int Somevalue = 16;
+const int Somevalue = 20;
 
 int whichExit = 0;
 
@@ -52,6 +53,8 @@ void setup() {
   pinMode(BIN1, OUTPUT);
   pinMode(BIN2, OUTPUT);
   pinMode(PWM, OUTPUT);
+   pinMode(trigPin, OUTPUT); // Sets the trigPin as an Output
+ pinMode(echoPin, INPUT); // Sets the echoPin as an Input
 
   Serial.begin(9600);
 }
@@ -64,7 +67,16 @@ void loop() {
   Serial.println(cSen.read());
   Serial.print("Right Sensor: ");
   Serial.println(rSen.read());
+  
+
+  tiger = calculateDistance();
+  
+  Serial.print("distance: ");
+  Serial.println(distance);
   delay(1000);
+if (tiger < 18) //replace somevalue with an actual value
+  { uturn();
+  }
 
   //Case 1: both white
   if(lSen.read() < bgLevel && rSen.read() < bgLevel && cSen.read() > lineLevel) {
@@ -125,6 +137,33 @@ void takeExit() {
     }
   }
 }*/
+void uturn() 
+{
+   analogWrite(PWM, 200);
+    digitalWrite(AIN1, HIGH);
+    digitalWrite(AIN2, LOW);
+    digitalWrite(BIN1, LOW);
+    digitalWrite(BIN2, HIGH);
+    delay(650);
+    analogWrite(PWM, 0);
+    digitalWrite(AIN1, HIGH);
+    digitalWrite(AIN2, LOW);
+    digitalWrite(BIN1, LOW);
+    digitalWrite(BIN2, LOW);
+    delay(40);
+}
+
+int calculateDistance(){ 
+ digitalWrite(trigPin, LOW); 
+  delayMicroseconds(2);
+  // Sets the trigPin on HIGH state for 10 micro seconds
+  digitalWrite(trigPin, HIGH); 
+  delayMicroseconds(10);
+  digitalWrite(trigPin, LOW);
+  duration = pulseIn(echoPin, HIGH); // Reads the echoPin, returns the sound wave travel time in microseconds
+  distance= duration*0.034/2;
+  return distance;
+}
 
 void spinMotor(int motorSpeed) {
   Serial.print("SpinMotor motorspeed: ");
@@ -266,4 +305,5 @@ void spinMotor(int motorSpeed) {
     digitalWrite(BIN1, LOW);
     digitalWrite(BIN2, LOW);
   }
+  
 }
