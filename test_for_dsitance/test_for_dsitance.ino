@@ -6,6 +6,8 @@
 //SharpIR RSensor = SharpIR(A4, 1080);
 //SharpIR CSensor = SharpIR(A5, 1080);
 
+int a;
+
 int ldist = 0;
 int rdist = 0;
 int cdist = 0;
@@ -66,7 +68,7 @@ void loop() {
   
  
 
-distance = calculateDistance();
+a = calculateDistance();
 
 Serial.print("Distance ");
 Serial.println(distance);
