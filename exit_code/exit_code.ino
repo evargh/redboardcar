@@ -1,7 +1,8 @@
-int distance;
+int distance =0;
+int duration = 0;
 const int trigPin = 10; // idk what pins we have avialbe but set these to open pins
 const int echoPin = 11;
-int Somevalue = 200; //put the correct value here, i havent tested so idk what it is
+int Somevalue = 15; //put the correct value here, i havent tested so idk what it is
 // add following 2 lines to setup 
  pinMode(trigPin, OUTPUT); // Sets the trigPin as an Output
  pinMode(echoPin, INPUT); // Sets the echoPin as an Input
